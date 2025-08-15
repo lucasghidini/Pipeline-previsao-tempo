@@ -19,3 +19,12 @@ class WeatherPipeline:
     Uma classe para orquestrar um pipeline de extração e transformação dos dados
     de clima da API oficial OpenWeather
     """
+    base_url = 'https://api.openweathermap.org/data/2.5/forecast'
+
+    def __init__(self, api_key, city):
+        self.api_key = api_key
+        self.city = city
+        self.raw_data = None
+        self.processed_data = None
+    
+  
