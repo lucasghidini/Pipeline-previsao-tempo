@@ -10,7 +10,7 @@ if __name__ == '__main__':
     if not API_KEY:
         raise ValueError('A chave da api "OPENWEATHER_API_KEY" não foi encontrada. Verifique o arquivo')
 
-    city = input('Digite o nome da cidade que deseja buscar os dados, certivique que esetaja escrito corretamente e que a cidade exista !')
+    city = 'São Paulo' #input('Digite o nome da cidade que deseja buscar os dados, certivique que esetaja escrito corretamente e que a cidade exista !')
 
     pipeline = WeatherPipeline(api_key=API_KEY, city= city)
 

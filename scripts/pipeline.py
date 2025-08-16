@@ -41,8 +41,8 @@ class WeatherPipeline:
             main_data = data.get('main',{})
             self.current_data = {
                 'cidade': data.get('name'),
-                'temperatura Atual': main_data.get('temp'),
-                'sensação Termica': main_data.get('feels_like'),
+                'temperatura_atual': main_data.get('temp'),
+                'sensacao_termica': main_data.get('feels_like'),
                 'clima': data.get('weather', [{}])[0].get('description')
             }
             print('Extração concluida !')
@@ -76,7 +76,7 @@ class WeatherPipeline:
         """
         if not self.raw_data:
             print('Transformação pulada: Não a dados de previsão para procesar')
-            self.raw_data = []
+            self.processed_data = []
             return
 
         print('Trasformando dados da previsão futura...')
@@ -85,22 +85,28 @@ class WeatherPipeline:
         previsoes_diarias = {}
 
         for previsao in self.raw_data:
+            main_data = previsao.get('main', {})
+            weather_data = previsao.get('weather', [{}])[0] 
+
             timestamp = datetime.strptime(previsao['dt_txt'],'%Y-%m-%d %H:%M:%S')
             data_previsao = timestamp.date()
 
             if hoje < data_previsao < limite_data:
-                temp_atual = previsao.get(['main']['temp'])
+                temp_atual = main_data.get('temp')
+                if temp_atual is None: continue
+                
+                clima_atual = weather_data.get('description')
 
                 if data_previsao not in previsoes_diarias:
                     previsoes_diarias[data_previsao] = {
                         'data': data_previsao.strftime('%Y-%m-%d'),
                         'temp_max':temp_atual,
-                        'clima_representativo': previsao['weather'][0]['description']
+                        'clima': clima_atual
                     }
                 else:
                     if temp_atual > previsoes_diarias[data_previsao]['temp_max']:
                         previsoes_diarias[data_previsao]['temp_max'] = temp_atual
-                        previsoes_diarias[data_previsao]['clima_representativo'] = previsao['weather'][0]['description']
+                        previsoes_diarias[data_previsao]['clima'] = clima_atual
         
         self.processed_data = list(previsoes_diarias.values())
         print(f'Transformação concluída ! {len(self.processed_data)} dias processados.')
