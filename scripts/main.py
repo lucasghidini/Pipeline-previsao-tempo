@@ -56,4 +56,24 @@ class WeatherPipeline:
             print('Extração concluida !')
         except requests.exceptions.RequestException as e:
             print(f'Erro de extração: {e}')
-            self.raw_data = []
+            self.current_data = {}
+    
+    def extract_prev(self):
+        """
+        Metodo para extrair os dados da previsão futura da API
+        """
+        print(f'Extraidno a previsão futura para {self.city}')
+        params = {
+            'q':self.city,
+            'appid': self.api_key,
+            'units': 'metric',
+            'lang':'pt_bt'
+        }
+        try:
+            response = requests.get(self.base_url_previsao, params= params)
+            response.raise_for_status()
+            self.raw_data = response.json().get('list', [])
+            print('Extração da previsão concluido !')
+        except requests.exceptions.RequestException as e:
+            print(f'Erro ao extrair: {e}')
+            self.raw_data =[]
