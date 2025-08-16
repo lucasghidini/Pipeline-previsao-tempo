@@ -25,6 +25,7 @@ class WeatherPipeline:
     def __init__(self, api_key, city):
         self.api_key = api_key
         self.city = city
+        self.current_data = None
         self.raw_data = None
         self.processed_data = None
     
@@ -43,7 +44,15 @@ class WeatherPipeline:
         try:
             response = requests.get(self.base_url_atual, params= params)
             response.raise_for_status()
-            self.raw_data = response.json().get('list',[])
+            data = response.json()
+
+            main_data = data.get('main',{})
+            self.current_data = {
+                'Cidade': data.get('name'),
+                'Temperatura Atual': main_data.get('temp'),
+                'Sensação Termica': main_data.get('feels_like'),
+                'Clima': data.get('weather', [{}])[0].get('description')
+            }
             print('Extração concluida !')
         except requests.exceptions.RequestException as e:
             print(f'Erro de extração: {e}')
