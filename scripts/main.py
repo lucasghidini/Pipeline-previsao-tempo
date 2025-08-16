@@ -77,3 +77,38 @@ class WeatherPipeline:
         except requests.exceptions.RequestException as e:
             print(f'Erro ao extrair: {e}')
             self.raw_data =[]
+
+    def transform_prev(self):
+        """
+        Método para transformar os dados brutos da previsão
+        """
+        if not self.raw_data:
+            print('Transformação pulada: Não a dados de previsão para procesar')
+            self.raw_data = []
+            return
+
+        print('Trasformando dados da previsão futura...')
+        hoje = date.today()
+        limite_data = hoje + timedelta(days=4)
+        previsoes_diarias = {}
+
+        for previsao in self.raw_data:
+            timestamp = datetime.strptime(previsao['dt_txt'],'%Y-%m-%d %H:%M:%S')
+            data_previsao = timestamp.date()
+
+            if hoje < data_previsao < limite_data:
+                temp_atual = previsao['main']['temp']
+
+                if data_previsao not in previsoes_diarias:
+                    previsoes_diarias[data_previsao] = {
+                        'data': data_previsao.strftime('%Y-%m-%d'),
+                        'temp_max':temp_atual,
+                        'clima_representativo': previsao['weather'][0]['description']
+                    }
+                else:
+                    if temp_atual > previsoes_diarias[data_previsao]['temp_max']:
+                        previsoes_diarias[data_previsao]['temp_max'] = temp_atual
+                        previsoes_diarias[data_previsao]['clima_representativo'] = previsao['weather'][0]['description']
+        
+        self.processed_data = list(previsoes_diarias.values())
+        print(f'Transformação concluída ! {len(self.processed_data)} dias processados.')
