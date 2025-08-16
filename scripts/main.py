@@ -7,7 +7,7 @@ def salvar(dados, nome_pasta, nome_arquivo):
     """
     Salva os dados em um arquivo .json dentro da pasta dados_salvos
     """
-    if not nome_arquivo.endwith('.json'):
+    if not nome_arquivo.endswith('.json'):
         print(f'Aviso: O nome do arquivo "{nome_arquivo}" foi alterado para terminar com .json')
         nome_arquivo += '.json'
 
@@ -38,14 +38,16 @@ if __name__ == '__main__':
     print('RESULTADO DO FINAL DO PIPELINE')
     if pipeline.current_data:
         print('[Clima Atual]')
-        print(f'Temperatura: {pipeline.current_data.get('temperatura_atual')}ºC')
-        print(f'Sensação Termica: {pipeline.current_data.get('sensacao_termica')}ºc')
-        print(f'Clima: {pipeline.current_data.get('clima')}')
+        print(f' - {pipeline.current_data}')
+
+
+        salvar(pipeline.current_data, 'dados_salvos', 'clima_atual.json')
     
     if pipeline.processed_data:
         print('[Previsão para os proximos dias]')
         for previsao in pipeline.processed_data:
             print(f'- {previsao['data']}: Temp. Max. {previsao['temp_max']}ºC, {previsao['clima']}')
-
+        
+        salvar(pipeline.processed_data, 'dados_salvos','previsao_futura.json')
     print('---Pipeline finalizado---')
     

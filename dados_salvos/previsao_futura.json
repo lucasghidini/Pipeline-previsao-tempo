@@ -1,0 +1,17 @@
+[
+    {
+        "data": "2025-08-16",
+        "temp_max": 22.1,
+        "clima": "chuva leve"
+    },
+    {
+        "data": "2025-08-17",
+        "temp_max": 21.93,
+        "clima": "céu limpo"
+    },
+    {
+        "data": "2025-08-18",
+        "temp_max": 20.99,
+        "clima": "céu limpo"
+    }
+]
