@@ -40,7 +40,7 @@ if __name__ == '__main__':
         raise ValueError('Configurações do banco de dados incompletas no arquivo .env')
 
 
-    city = 'Santos,BR' #input('Digite o nome da cidade que deseja buscar os dados, certivique que esetaja escrito corretamente e que a cidade exista !')
+    city = 'Bauru, BR' #input('Digite o nome da cidade que deseja buscar os dados, certivique que esetaja escrito corretamente e que a cidade exista !')
 
     pipeline = WeatherPipeline(api_key=API_KEY, city= city, db_config=db_config)
 
