@@ -51,7 +51,8 @@ Siga os passos abaixo para executar o pipeline em sua máquina local.
 Primeiro, clone o repositório para a sua máquina:
 
 ```bash
-git clone https://github.com/lucasghidini/Pipeline-de-Dados.git
+git clone https://github.com/lucasghidini/Pipeline-previsao-tempo
+cd pipeline previsao tempo
 ```
 
 Crie um arquivo chamado `requirements.txt` com o seguinte conteúdo:
