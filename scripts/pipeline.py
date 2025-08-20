@@ -18,10 +18,20 @@ class WeatherPipeline:
         self.api_key = api_key
         self.city = city
         self.db_config = db_config
-        self.connection = self._get_db_connetion()
+        self.connection = self._get_db_connection()
         self.current_data = None
+        self.raw_data = None
         self.processed_data = None
     
+    def _get_db_connection(self):
+        try:
+            conn = mysql.connector.connect(**self.db_config)
+            print('Sucesso: Conexão com banco de dados realizada')
+            return conn
+        except mysql.connector.Error as e:
+            print(f'Erro ao conenctar com o MySQL: {e}')
+            return None
+
     def extract_prev_atual(self):
         """
         Método para a extrção dos dados da previsão atual da API,
@@ -55,7 +65,7 @@ class WeatherPipeline:
         """
         Metodo para extrair os dados da previsão futura da API
         """
-        print(f'Extraidno a previsão futura para {self.city}')
+        print(f'Extraindo a previsão futura para {self.city}')
         params = {
             'q':self.city,
             'appid': self.api_key,
@@ -112,6 +122,79 @@ class WeatherPipeline:
         self.processed_data = list(previsoes_diarias.values())
         print(f'Transformação concluída ! {len(self.processed_data)} dias processados.')
     
+    def carregando_previsao_atual(self):
+        """
+        Carrega os dados do clima atual na tabela `clima_atual`.
+        """
+
+        if not self.current_data or not self.connection:
+            return
+        print('Carregando dados atuais no banco de dados')
+        cursor = self.connection.cursor()
+        sql = """
+            INSERT INTO clima_atual
+            (cidade, temperatura_atual, sensacao_termica, clima, data_extracao)
+            VALUES (%s,%s,%s,%s,%s)
+            """
+        data_tuple = (
+            self.current_data.get('cidade'),
+            self.current_data.get('temperatura_atual'),
+            self.current_data.get('sensacao_termica'),
+            self.current_data.get('clima'),
+            datetime.now()
+        )
+        try:
+            cursor.execute(sql, data_tuple)
+            self.connection.commit()
+            print('Dados atuais inseridos com seucesso !')
+        except mysql.connector.Error as e:
+            print(f'Erro ao inserir os dados: {e}')
+            self.connection.rollback()
+        finally:
+            cursor.close()
+    
+    def carregando_previsao_futura(self):
+        """
+        Carrega os dados da previsão futura na tabela `previsao_futura`.
+        """
+
+        if not self.processed_data or self.connection:
+            return
+        print('Carregando previsao futura no banco de dados')
+        cursor = self.connection.cursor()
+        sql = """
+            INSERT INTO previsao_futura
+            (cidade, data_previsao, temp_max, clima, data_extracao)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+        rows_to_insert = []
+        cidade_nome = self.current_data.get('cidade', self.city)
+        for previsao in self.processed_data:
+            rows_to_insert.append((
+                cidade_nome,
+                previsao.get('data'),
+                previsao.get('temp_max'),
+                previsao.get('clima'),
+                datetime.now()
+            ))
+        
+        try:
+            cursor.executemany(sql,rows_to_insert)
+            self.connection.commit()
+            print(f'{cursor.rowcount} registros de previsao inseridos com sucesso')
+        except mysql.connector.Error as e:
+            print(f'Erro ao inserir os dados: {e}')
+        finally:
+            cursor.close()
+        
+    def close_bd(self):
+        """
+        fecha a conexão com o banco de dados se estiver aberta
+         """ 
+        if self.connection and self.connection.is_connected():
+            self.connection.close()
+            print('Sucesso: conexão com o banco de dados fechada')
+
     def run(self):
         """
         Executa todas as pipelines
@@ -119,3 +202,5 @@ class WeatherPipeline:
         self.extract_prev_atual()
         self.extract_prev()
         self.transform_prev()
+        self.carregando_previsao_atual()
+        self.carregando_previsao_futura()

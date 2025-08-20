@@ -35,28 +35,18 @@ if __name__ == '__main__':
         'password': os.getenv('DB_PASSWORD'),
         'database': os.getenv('DB_NAME')
     }
-
+    
+    if not all (db_config.values()):
+        raise ValueError('Configurações do banco de dados incompletas no arquivo .env')
 
 
     city = 'Santos,BR' #input('Digite o nome da cidade que deseja buscar os dados, certivique que esetaja escrito corretamente e que a cidade exista !')
 
-    pipeline = WeatherPipeline(api_key=API_KEY, city= city)
+    pipeline = WeatherPipeline(api_key=API_KEY, city= city, db_config=db_config)
 
-    pipeline.run()
+    if pipeline.connection:
+        pipeline.run()
+        pipeline.close_bd()
 
-    print('RESULTADO DO FINAL DO PIPELINE')
-    if pipeline.current_data:
-        print('[Clima Atual]')
-        print(f' - {pipeline.current_data}')
-
-
-        salvar(pipeline.current_data, 'dados_salvos', 'clima_atual.json')
-    
-    if pipeline.processed_data:
-        print('[Previsão para os proximos dias]')
-        for previsao in pipeline.processed_data:
-            print(f'- {previsao['data']}: Temp. Max. {previsao['temp_max']}ºC, {previsao['clima']}')
-        
-        salvar(pipeline.processed_data, 'dados_salvos','previsao_futura.json')
     print('---Pipeline finalizado---')
     
