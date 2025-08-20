@@ -1,6 +1,6 @@
 import requests
-import csv
 from datetime import date, timedelta, datetime
+import mysql.connector
 
 
 
@@ -14,11 +14,12 @@ class WeatherPipeline:
     base_url_atual = 'https://api.openweathermap.org/data/2.5/weather'
     base_url_previsao = 'https://api.openweathermap.org/data/2.5/forecast'
 
-    def __init__(self, api_key, city):
+    def __init__(self, api_key, city, db_config):
         self.api_key = api_key
         self.city = city
+        self.db_config = db_config
+        self.connection = self._get_db_connetion()
         self.current_data = None
-        self.raw_data = None
         self.processed_data = None
     
     def extract_prev_atual(self):

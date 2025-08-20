@@ -29,6 +29,15 @@ if __name__ == '__main__':
     if not API_KEY:
         raise ValueError('A chave da api "OPENWEATHER_API_KEY" não foi encontrada. Verifique o arquivo')
 
+    db_config = {
+        'host': os.getenv('DB_HOST'),
+        'user': os.getenv('DB_USER'),
+        'password': os.getenv('DB_PASSWORD'),
+        'database': os.getenv('DB_NAME')
+    }
+
+
+
     city = 'Santos,BR' #input('Digite o nome da cidade que deseja buscar os dados, certivique que esetaja escrito corretamente e que a cidade exista !')
 
     pipeline = WeatherPipeline(api_key=API_KEY, city= city)
