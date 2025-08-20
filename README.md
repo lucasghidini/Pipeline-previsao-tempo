@@ -1,134 +1,138 @@
 # Pipeline de Dados de Previsão do Tempo
 
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
+
 ## 📖 Sobre o Projeto
 
-Este projeto implementa um pipeline de dados ETL (Extração, Transformação e Carga) completo, desenvolvido em Python. O objetivo é extrair dados de clima da API pública [OpenWeatherMap](https://openweathermap.org/api), processá-los e salvá-los em um formato estruturado.
+Este projeto implementa um pipeline de dados ETL (Extração, Transformação e Carga) completo, desenvolvido em Python. O objetivo é extrair dados de clima da API pública [OpenWeatherMap](https://openweathermap.org/api), processá-los e carregá-los em um **banco de dados MySQL** para persistência e análise futura.
 
-O pipeline é capaz de buscar tanto as condições climáticas atuais quanto uma previsão consolidada para os próximos 3 dias para qualquer cidade do mundo. O resultado final é salvo localmente em arquivos `.json`.
+O pipeline é capaz de buscar tanto as condições climáticas atuais quanto uma previsão consolidada para os próximos 3 dias para qualquer cidade do mundo.
 
 ## ✨ Funcionalidades
 
-  - **Extração de Dados Atuais:** Coleta de dados como temperatura, sensação térmica e descrição do clima em tempo real.
-  - **Extração de Previsão Futura:** Coleta de dados brutos de previsão para os próximos 5 dias, com intervalos de 3 horas.
-  - **Transformação de Dados:** Processa os dados brutos da previsão para calcular a temperatura máxima de cada um dos próximos 3 dias, consolidando as informações em um formato simples e útil.
-  - **Carga de Dados:** Salva os dados processados (atuais e futuros) em arquivos `.json` distintos em um diretório local.
-  - **Configuração Segura:** Utiliza um arquivo `.env` para gerenciar a chave da API, evitando que informações sensíveis sejam expostas no código.
+-   **Extração de Dados Atuais:** Coleta de dados como temperatura, sensação térmica e descrição do clima em tempo real.
+-   **Extração de Previsão Futura:** Coleta de dados brutos de previsão para os próximos 5 dias, com intervalos de 3 horas.
+-   **Transformação de Dados:** Processa os dados brutos da previsão para calcular a temperatura máxima de cada um dos próximos 3 dias, consolidando as informações.
+-   **Carga de Dados:** Carrega os dados processados (atuais e futuros) em tabelas distintas no banco de dados MySQL.
+-   **Configuração Segura:** Utiliza um arquivo `.env` para gerenciar a chave da API e as credenciais do banco de dados, evitando que informações sensíveis sejam expostas no código.
 
 ## 🏛️ Arquitetura do Pipeline
 
-O fluxo de dados segue o padrão ETL clássico:
+O fluxo de dados segue o padrão ETL clássico, com o carregamento sendo feito em um banco de dados relacional.
 
-**API OpenWeatherMap** → **[E] Extração** (Python/Requests) → **[T] Transformação** (Python/Datetime) → **[L] Carga** (Arquivos JSON)
+**API OpenWeatherMap** → **[E] Extração** (Python/Requests) → **[T] Transformação** (Python/Datetime) → **[L] Carga** (Banco de Dados MySQL)
 
 ## 🛠️ Tecnologias e Conceitos Utilizados
 
 Este projeto foi construído utilizando as seguintes tecnologias e conceitos de engenharia de dados:
 
-  - **Linguagem:** Python 3
-  - **Bibliotecas Principais:**
-      - `requests`: Para realizar chamadas HTTP e consumir a API REST da OpenWeatherMap.
-      - `python-dotenv`: Para o gerenciamento seguro de variáveis de ambiente (API Key).
-      - `datetime`: Para manipulação e cálculos envolvendo datas e horas na etapa de transformação.
-      - `os` e `json`: Para manipulação de arquivos e pastas, e para serialização dos dados no formato JSON.
-  - **Conceitos de Software:**
-      - **Programação Orientada a Objetos (OOP):** O pipeline é encapsulado na classe `WeatherPipeline`, organizando o código de forma coesa e reutilizável.
-      - **Modularidade:** O código é dividido em dois arquivos (`pipeline.py` e `main.py`), separando a lógica da ferramenta (a classe) da sua execução.
-  - **Desenvolvimento:**
-      - Um **Jupyter Notebook** foi utilizado para a prototipação, testes e validação inicial das funções e da lógica de transformação antes da implementação final no script.
+-   **Linguagem:** Python 3
+-   **Banco de Dados:** MySQL
+-   **Bibliotecas Principais:**
+    -   `requests`: Para consumir a API REST.
+    -   `python-dotenv`: Para gerenciamento seguro de credenciais.
+    -   `mysql-connector-python`: Para conectar e manipular o banco de dados MySQL.
+    -   `datetime`: Para lógica de datas e timestamps.
+-   **Conceitos de Software:**
+    -   **Programação Orientada a Objetos (OOP):** O pipeline é encapsulado na classe `WeatherPipeline`, organizando o código de forma coesa e reutilizável.
+    -   **Modularidade:** O código é dividido em dois arquivos (`pipeline.py` e `main.py`), separando a lógica da ferramenta da sua execução.
+-   **Desenvolvimento:**
+    -   Um **Jupyter Notebook** foi utilizado para a prototipação, testes e validação inicial das funções antes da implementação final.
 
 ## 🚀 Como Executar o Projeto
 
-Siga os passos abaixo para executar o pipeline em sua máquina local.
+### 1. Pré-requisitos
+-   Python 3.8 ou superior
+-   Um servidor MySQL 8.0 ou superior (local ou na nuvem)
+-   Uma chave de API da [OpenWeatherMap](https://home.openweathermap.org/users/sign_up).
 
-### 1\. Pré-requisitos
-
-  - Python 3.8 ou superior
-  - pip (gerenciador de pacotes do Python)
-  - Uma chave de API da [OpenWeatherMap](https://home.openweathermap.org/users/sign_up) (o plano gratuito é suficiente).
-
-### 2\. Instalação
-
-Primeiro, clone o repositório para a sua máquina:
-
+### 2. Instalação
+Clone o repositório e instale as dependências:
 ```bash
-git clone https://github.com/lucasghidini/Pipeline-previsao-tempo
-cd pipeline previsao tempo
+git clone [https://github.com/lucasghidini/Pipeline-previsao-tempo](https://github.com/lucasghidini/Pipeline-previsao-tempo)
+cd Pipeline-previsao-tempo
 ```
 
-Crie um arquivo chamado `requirements.txt` com o seguinte conteúdo:
-
+Crie um arquivo `requirements.txt` com o conteúdo:
 ```
-requests
-python-dotenv
+    requests
+    python-dotenv
+    mysql-connector-python
 ```
-
-Agora, instale as dependências:
-
+E instale com:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3\. Configuração da API Key
+### 3. Configuração do Banco de Dados
+Conecte-se ao seu servidor MySQL e crie um banco de dados. Em seguida, crie as tabelas necessárias executando o script SQL abaixo:
 
-Crie um arquivo chamado `.env` na raiz do projeto. Dentro dele, adicione sua chave da API da OpenWeatherMap da seguinte forma:
+<details>
+<summary>Clique para ver o script SQL de criação das tabelas</summary>
+
+```sql
+CREATE TABLE clima_atual (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cidade VARCHAR(255),
+    temperatura_atual DECIMAL(5, 2),
+    sensacao_termica DECIMAL(5, 2),
+    clima VARCHAR(255),
+    data_extracao DATETIME
+);
+
+CREATE TABLE previsao_futura (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cidade VARCHAR(255),
+    data_previsao DATE,
+    temp_max DECIMAL(5, 2),
+    clima VARCHAR(255),
+    data_extracao DATETIME
+);
+```
+Os dados processados pelo pipeline são armazenados em duas tabelas no MySQL com os seguintes esquemas:
+
+### Tabela: `clima_atual`
+| Coluna              | Tipo de Dado      | Descrição                                         |
+| ------------------- | ----------------- | ------------------------------------------------- |
+| `id`                | INT (PK)          | Identificador único do registro.                  |
+| `cidade`            | VARCHAR(255)      | Nome da cidade da qual os dados foram extraídos.  |
+| `temperatura_atual` | DECIMAL(5, 2)     | Temperatura em graus Celsius no momento da coleta.|
+| `sensacao_termica`  | DECIMAL(5, 2)     | Sensação térmica em graus Celsius.                |
+| `clima`             | VARCHAR(255)      | Descrição textual do clima (ex: "céu limpo").     |
+| `data_extracao`     | DATETIME          | Data e hora em que o pipeline executou a extração.|
+
+### Tabela: `previsao_futura`
+| Coluna          | Tipo de Dado      | Descrição                                           |
+| --------------- | ----------------- | --------------------------------------------------- |
+| `id`            | INT (PK)          | Identificador único do registro.                    |
+| `cidade`        | VARCHAR(255)      | Nome da cidade da qual os dados foram extraídos.    |
+| `data_previsao` | DATE              | A data futura para a qual a previsão se aplica.     |
+| `temp_max`      | DECIMAL(5, 2)     | A temperatura máxima prevista para aquele dia.      |
+| `clima`         | VARCHAR(255)      | A descrição do clima mais provável para aquele dia. |
+| `data_extracao` | DATETIME          | Data e hora em que o pipeline executou a extração.  |
+
+</details>
+
+### 4. Configuração das Variáveis de Ambiente
+Crie um arquivo `.env` na raiz do projeto. Ele deve conter tanto a chave da API quanto as credenciais do seu banco de dados.
 
 ```
+# Credenciais da API
 OPENWEATHER_API_KEY=sua_chave_de_api_secreta_aqui
+
+# Credenciais do Banco de Dados
+DB_HOST=localhost
+DB_USER=seu_usuario_do_banco
+DB_PASSWORD=sua_senha_do_banco
+DB_NAME=nome_do_seu_banco
 ```
 
-### 4\. Execução
-
-Para rodar o pipeline, execute o arquivo `main.py` a partir do seu terminal. O script solicitará que você digite o nome da cidade.
+### 5. Execução
+Execute o arquivo `main.py`. O script solicitará que você digite o nome da cidade. Os dados serão inseridos diretamente nas tabelas do MySQL.
 
 ```bash
 python main.py
 ```
 
-Após a execução, os arquivos `clima_atual.json` e `previsao_futura.json` serão criados na pasta `dados_salvos`.
-
-## 📂 Estrutura do Projeto
-
-```
-.
-├── dados_salvos/           # Pasta onde os arquivos JSON de saída são salvos
-├── .env                    # Arquivo de configuração da API Key (não versionado)
-├── main.py                 # Ponto de entrada do programa, orquestra o pipeline
-├── pipeline.py             # Módulo que contém a classe WeatherPipeline (a ferramenta)
-├── requirements.txt        # Lista de dependências do projeto
-└── README.md               # Este arquivo
-```
-
-## 📄 Exemplo de Saída
-
-**`clima_atual.json`**
-
-```json
-{
-    "cidade": "Santos",
-    "temperatura_atual": 25.0,
-    "sensacao_termica": 25.0,
-    "clima": "céu limpo"
-}
-```
-
-**`previsao_futura.json`**
-
-```json
-[
-    {
-        "data": "2025-08-16",
-        "temp_max": 26.5,
-        "clima": "nuvens dispersas"
-    },
-    {
-        "data": "2025-08-17",
-        "temp_max": 27.0,
-        "clima": "chuva leve"
-    },
-    {
-        "data": "2025-08-18",
-        "temp_max": 25.8,
-        "clima": "céu limpo"
-    }
-]
-```
+Feito por Lucas Ghidini. 
